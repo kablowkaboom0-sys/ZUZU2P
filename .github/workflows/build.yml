@@ -1,0 +1,29 @@
+name: Build TrimUI SD package
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ARM cross toolchain and SDL2
+        run: |
+          sudo dpkg --add-architecture armhf
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-linux-gnueabihf libc6-dev-armhf-cross libsdl2-dev:armhf zip
+      - name: Cross compile
+        run: |
+          arm-linux-gnueabihf-gcc -O2 -Wall -Wextra -I/usr/include/SDL2 -D_REENTRANT -o zuzu2p main.c -L/usr/lib/arm-linux-gnueabihf -lSDL2 -lm
+          file zuzu2p
+      - name: Package SD card directory
+        run: |
+          mkdir -p package/Apps/ZUZU2P
+          cp zuzu2p launch.sh package/Apps/ZUZU2P/
+          chmod +x package/Apps/ZUZU2P/*
+          cd package && zip -r ../ZUZU2P-v1.0-TrimUI-armhf.zip Apps
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZUZU2P-v1.0-TrimUI-armhf
+          path: ZUZU2P-v1.0-TrimUI-armhf.zip
