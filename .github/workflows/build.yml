@@ -15,6 +15,8 @@ jobs:
       - name: Cross compile against SDL2 ARM shared library
         run: |
           sudo dpkg --add-architecture armhf
+          sudo sed -i 's/^Types: deb$/Types: deb/; s/^Architectures:.*$/Architectures: amd64 i386/' /etc/apt/sources.list.d/ubuntu.sources
+          printf 'Types: deb\\nURIs: http://ports.ubuntu.com/ubuntu-ports/\\nSuites: noble noble-updates noble-backports noble-security\\nComponents: main restricted universe multiverse\\nArchitectures: armhf\\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\\n' | sudo tee /etc/apt/sources.list.d/armhf.sources
           sudo apt-get update
           sudo apt-get install -y libsdl2-2.0-0:armhf
           arm-linux-gnueabihf-gcc -O2 -Wall -Wextra -I/usr/include/SDL2 -D_REENTRANT -o zuzu2p main.c /usr/lib/arm-linux-gnueabihf/libSDL2-2.0.so.0 -lm
