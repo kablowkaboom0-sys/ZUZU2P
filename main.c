@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #define W 1280
 #define H 720
