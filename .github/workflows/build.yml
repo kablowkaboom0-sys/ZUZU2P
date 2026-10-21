@@ -8,14 +8,16 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install ARM cross toolchain and SDL2
+      - name: Install ARM cross compiler and SDL2 headers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-linux-gnueabihf libc6-dev-armhf-cross libsdl2-dev zip
+      - name: Cross compile against SDL2 ARM shared library
         run: |
           sudo dpkg --add-architecture armhf
           sudo apt-get update
-          sudo apt-get install -y gcc-arm-linux-gnueabihf libc6-dev-armhf-cross libsdl2-dev:armhf zip
-      - name: Cross compile
-        run: |
-          arm-linux-gnueabihf-gcc -O2 -Wall -Wextra -I/usr/include/SDL2 -D_REENTRANT -o zuzu2p main.c -L/usr/lib/arm-linux-gnueabihf -lSDL2 -lm
+          sudo apt-get install -y libsdl2-2.0-0:armhf
+          arm-linux-gnueabihf-gcc -O2 -Wall -Wextra -I/usr/include/SDL2 -D_REENTRANT -o zuzu2p main.c /usr/lib/arm-linux-gnueabihf/libSDL2-2.0.so.0 -lm
           file zuzu2p
       - name: Package SD card directory
         run: |
